@@ -20,7 +20,7 @@
         ]
     },
     "require": {
-        "php": "^7.0, <7.4",
+        "php": "7.3",
         "composer/package-versions-deprecated": "^1.11",
         "doctrine/doctrine-bundle": "^1.6",
         "doctrine/orm": "^2.5",
