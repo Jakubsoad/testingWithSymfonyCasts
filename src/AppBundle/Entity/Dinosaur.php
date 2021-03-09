@@ -10,7 +10,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Dinosaur
 {
-    const LARGE = 20;
+    const LARGE = 10;
+
+    const HUGE = 30;
     /**
      * @ORM\Column(type="integer")
      */
@@ -21,6 +23,11 @@ class Dinosaur
 
     /** @var bool */
     private $isCarnivorous;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Enclosure", inversedBy="dinosaurs")
+     */
+    private $enclosure;
 
     /**
      * Dinosaur constructor.

@@ -4,6 +4,9 @@
 namespace Tests\AppBundle\Factory;
 
 use AppBundle\Entity\Dinosaur;
+use AppBundle\Service\DinosaurLengthDeterminator;
+use Exception;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use AppBundle\Factory\DinosaurFactory;
 
@@ -13,12 +16,18 @@ class DinosaurFactoryTest extends TestCase
     private $factory;
 
     /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $lengthDeterminator;
+
+    /**
      * DinosaurFactoryTest constructor.
      * @param DinosaurFactory $factory
      */
     public function setUp(): void
     {
-        $this->factory = new DinosaurFactory();
+        $this->lengthDeterminator = $this->createMock(DinosaurLengthDeterminator::class);
+        $this->factory = new DinosaurFactory($this->lengthDeterminator);
     }
 
     public function testItGrowsAVelociraptor()
@@ -50,26 +59,26 @@ class DinosaurFactoryTest extends TestCase
     /**
      * @dataProvider getSpecificationTest()
      */
-    public function testItGrowsADinosaurFromASpecification(string $spec, bool $expectedIsLarge, bool $expectedIsCarnivorous)
+    public function testItGrowsADinosaurFromASpecification(string $spec, bool $expectedIsCarnivorous)
     {
+        $this->lengthDeterminator->method('getLengthFromSpecification')
+            ->willReturn(20);
+
         $dinosaur = $this->factory->growFromSpecification($spec);
 
-        if ($expectedIsLarge) {
-            $this->assertGreaterThanOrEqual(Dinosaur::LARGE, $dinosaur->getLength());
-        } else {
-            $this->assertLessThan(Dinosaur::LARGE, $dinosaur->getLength());
-        }
-
-
         $this->assertSame($expectedIsCarnivorous, $dinosaur->isCarnivorous(), 'Diets do not match!');
+        $this->assertSame(20, $dinosaur->getLength());
     }
 
-    public function getSpecificationTest()
+    /**
+     * @return array[]
+     */
+    public function getSpecificationTest(): array
     {
         return [
-            ['large carnivorous dinosaur', true, true],
-            ['give me all the cookies!', false, false],
-            ['large herbivore', true, false],
+            ['large carnivorous dinosaur', true],
+            ['give me all the cookies!', false],
+            ['large herbivore', false],
         ];
     }
 }

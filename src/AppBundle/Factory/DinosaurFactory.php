@@ -5,9 +5,25 @@ namespace AppBundle\Factory;
 
 
 use AppBundle\Entity\Dinosaur;
+use AppBundle\Service\DinosaurLengthDeterminator;
+use Exception;
 
 class DinosaurFactory
 {
+    /**
+     * @var DinosaurLengthDeterminator
+     */
+    private $determinator;
+
+    /**
+     * DinosaurFactory constructor.
+     * @param DinosaurLengthDeterminator $determinator
+     */
+    public function __construct(DinosaurLengthDeterminator $determinator)
+    {
+        $this->determinator = $determinator;
+    }
+
 
     /**
      * @param int $length
@@ -21,13 +37,17 @@ class DinosaurFactory
     /**
      * @param string $specification
      * @return Dinosaur
-     * @throws \Exception
+     * @throws Exception
      */
     public function growFromSpecification(string $specification): Dinosaur
     {
         $codeName = 'InG-' . random_int(1, 99999);
-        $length = random_int(1, Dinosaur::LARGE - 1);
+        $length = $this->determinator->getLengthFromSpecification($specification);
         $isCarnivorous = false;
+
+        if (stripos($specification, 'carnivorous') !== false) {
+            $isCarnivorous = true;
+        }
 
         return $this->createDinosaur($codeName, $isCarnivorous, $length);
     }
