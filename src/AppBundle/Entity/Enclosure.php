@@ -78,14 +78,19 @@ class Enclosure
         return false;
     }
 
+    public function addSecurity(Security $security)
+    {
+        $this->securities->add($security);
+    }
+
+    public function getSecurities(): Collection
+    {
+        return $this->securities;
+    }
+
     private function canAddDinosaur(Dinosaur $dinosaur): bool
     {
         return count($this->dinosaurs) === 0
             || $this->dinosaurs->first()->isCarnivorous() === $dinosaur->isCarnivorous();
-    }
-
-    private function addSecurity(Security $security)
-    {
-        $this->securities->add($security);
     }
 }
