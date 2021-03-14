@@ -1,0 +1,39 @@
+version: '3.9'
+services:
+
+    db:
+        container_name: db
+        build:
+            context: docker/postgres
+        restart: always
+        environment:
+            - "POSTGRES_USER=postgres"
+            - "POSTGRES_PASSWORD=password"
+        ports:
+            - "54321:5432"
+
+    php:
+        container_name: php-fpm
+        build:
+            context: docker/php-fpm
+            args:
+                ENABLE_PHP_XDEBUG: 0
+        ports:
+            - "9000:9001"
+        volumes:
+            - ./:/var/www/:cached
+            - ./logs/symfony:/var/www/var/log:cached
+        depends_on: 
+            - db
+
+    nginx:
+        container_name: nginx
+        build: docker/nginx
+        ports:
+            - "80:80"
+        depends_on: 
+            - php
+        volumes:
+            - ./logs/nginx:/var/log/nginx:cached
+            - ./:/var/www/:cached
+
