@@ -42,8 +42,8 @@ twig:
 doctrine:
     dbal:
         driver: pdo_pgsql
-        host: 127.0.0.1
-        port: 54321
+        host: db
+        port: 5432
         dbname: learn_to_test
         user: postgres
         password: password
